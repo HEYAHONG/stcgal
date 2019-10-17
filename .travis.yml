@@ -7,27 +7,10 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
-  - "pypy3"
-before_install:
-  - sudo apt install rpm dpkg-dev debhelper dh-python python3-setuptools fakeroot python3-serial python3-yaml
+  #- "pypy3"
 install:
-  - pip install pyserial pyusb tqdm
+  - pip install pyusb coverage coveralls pyserial PyYAML tqdm
 script:
   - python setup.py build
-  - python setup.py test
-before_deploy:
-  - deactivate
-  - python3 setup.py bdist_rpm
-  - dpkg-buildpackage -uc -us
-  - cp ../*.deb dist/
-deploy:
-  provider: releases
-  api_key: $GH_TOKEN
-  file_glob: true
-  file:
-  - dist/stcgal*_all.deb
-  - dist/stcgal*.noarch.rpm
-  skip_cleanup: true
-  on:
-    tags: true
-    python: "3.4"
+  - coverage run --source=stcgal setup.py test
+  - coveralls
